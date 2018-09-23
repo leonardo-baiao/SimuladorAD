@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Simulador.Estruturas
+namespace Estatisticas
 {
-    public class Evento
+    public class Estatistica
     {
     }
 }

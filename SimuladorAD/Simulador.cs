@@ -1,19 +1,44 @@
 ﻿using System;
+using Estatisticas;
+using Estruturas;
 
 namespace Simulador
 {
     class Simulador
     {
-        static void Main(string[] args)
-        {
-            bool processando = true;
+        private EstruturaEventos listaEventos;
+        private TipoEstrutura tipoEstrutura;
+        private Evento evento;
+        private GeradorEstatisticas geradorEstatisticas;
 
-            while (processando)
-            {
-                ProximoEvento();
-                TrataEvento();
-                GeraEstatisticas();
-            }
+        public Simulador(TipoEstrutura tipoEstrutura)
+        {
+            GeraFilaEventos(tipoEstrutura);
+            geradorEstatisticas = new GeradorEstatisticas();
+        }
+
+        private void GeraFilaEventos(TipoEstrutura tipoEstrutura)
+        {
+            if (tipoEstrutura.Equals(TipoEstrutura.FILA))
+                listaEventos = new FilaEventos();
+            else
+                listaEventos = new PilhaEventos();
+        }
+
+        public void GeraEstatisticas()
+        {
+            geradorEstatisticas.CalculaPoisson();
+        }
+
+        public void TrataEvento()
+        {
+            
+        }
+
+        public void ProximoEvento()
+        {
+            evento = listaEventos.RetornaEvento();
+            listaEventos.DeletaEvento();
         }
     }
 }

@@ -4,30 +4,25 @@ using System.Text;
 
 namespace Estruturas
 {
-    public class FilaEventos : IEstruturaEventos
+    public class FilaEventos : EstruturaEventos
     {
-        private readonly List<Evento> listaEventos;
-
-        public FilaEventos()
-        {
-            listaEventos = new List<Evento>();
-        }
-        public void AdicionaEvento(Evento evento)
+        
+        public override void AdicionaEvento(Evento evento)
         {
             listaEventos.Add(evento);
         }
 
-        public void DeletaEvento()
+        public override void DeletaEvento()
         {
             listaEventos.RemoveAt(0);
         }
 
-        public void MostraEventos()
+        public override void MostraEventos()
         {
             throw new NotImplementedException();
         }
 
-        public Evento RetornaEvento()
+        public override Evento RetornaEvento()
         {
             return listaEventos[0];
         }

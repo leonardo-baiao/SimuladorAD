@@ -4,32 +4,27 @@ using System.Text;
 
 namespace Estruturas
 {
-    class PilhaEventos : IEstruturaEventos
+    public class PilhaEventos : EstruturaEventos
     {
-        private readonly List<Evento> listaEventos;
 
-        public PilhaEventos()
-        {
-            listaEventos = new List<Evento>(); 
-        }
-
-        public void AdicionaEvento(Evento evento)
+        public override void AdicionaEvento(Evento evento)
         {
             listaEventos.Add(evento);
         }
 
-        public void MostraEventos()
+        public override void DeletaEvento()
+        {
+            listaEventos.RemoveAt(listaEventos.Count - 1);
+        }
+
+        public override void MostraEventos()
         {
             throw new NotImplementedException();
         }
 
-        public Evento RetornaEvento()
+        public override Evento RetornaEvento()
         {
             return listaEventos[listaEventos.Count - 1];
-        }
-        public void DeletaEvento()
-        {
-            listaEventos.RemoveAt(listaEventos.Count - 1);
         }
 
     }
