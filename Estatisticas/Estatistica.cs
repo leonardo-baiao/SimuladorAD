@@ -6,5 +6,6 @@ namespace Estatisticas
 {
     public class Estatistica
     {
+        
     }
 }
