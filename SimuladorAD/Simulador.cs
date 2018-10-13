@@ -1,44 +1,112 @@
 ﻿using System;
 using Estatisticas;
 using Estruturas;
+using System.Collections.Generic;
 
 namespace Simulador
 {
     class Simulador
     {
-        private EstruturaEventos listaEventos;
-        private TipoEstrutura tipoEstrutura;
+        private int rodada = 0;
+        private double tempo = 0;
+        private readonly int cons TAXASERVIDOR = 1;
+        private readonly int cons TAXACHEGADA = 1;
         private Evento evento;
-        private GeradorEstatisticas geradorEstatisticas;
+        private ListaEventos listaEventos;
+        private Fila fila;
+        private List<Estatistica> listaEstatisticas;
+        private readonly GeradorEstatisticas geradorEstatisticas;
 
-        public Simulador(TipoEstrutura tipoEstrutura)
+        public Simulador(TipoFila tipoFila)
         {
-            GeraFilaEventos(tipoEstrutura);
+            GeraFila(tipoFila);
+            listaEventos = new ListaEventos();
+            listaEstatisticas = new List<Estatistica>();
             geradorEstatisticas = new GeradorEstatisticas();
         }
 
-        private void GeraFilaEventos(TipoEstrutura tipoEstrutura)
+        public int Rodada
         {
-            if (tipoEstrutura.Equals(TipoEstrutura.FILA))
-                listaEventos = new FilaEventos();
-            else
-                listaEventos = new PilhaEventos();
+            get
+            {
+                return rodada;
+            }
+        }
+
+        public void ProcessaEventos(int kmin)
+        {
+            while(kmin > 0)
+            {
+                TrataEvento();
+            }
         }
 
         public void GeraEstatisticas()
         {
-            geradorEstatisticas.CalculaPoisson();
+
         }
 
-        public void TrataEvento()
+        private void TrataEvento()
         {
-            
+            evento = listaEventos.ProximoEvento();
+
+            if(evento == null)
+            {
+                filaEventos.AdicionaEvento(CalculaProximaChegada());
+                return;
+            }
+            tempo += evento.Tempo;
+
+            switch(evento.Tipo)
+            {
+                case TipoEvento.CHEGADA :
+                    ChegadaCliente();
+                    break;
+                case TipoEvento.SAIDA :
+                    AtendimentoCliente();
+                    break;
+                default:
+                    break;
+            }
         }
 
-        public void ProximoEvento()
+        private void ChegadaCliente()
         {
-            evento = listaEventos.RetornaEvento();
-            listaEventos.DeletaEvento();
+            fila.AdicionaCliente(new Cliente{ Tipo = rodada });
+            filaEventos.AdicionaEvento(CalculaProximaChegada());
+            filaEventos.AdicionaEvento(CalculaTempoAtendimento());
+        }
+
+        private void AtendimentoCliente(Evento evento)
+        {
+            var cliente = fila.RetornaCliente();
+            geradorEstatisticas.CalculaSomaAmostras();
+        }
+
+        private void GeraFila(TipoFila tipoFila)
+        {
+            if (tipoFila.Equals(TipoFila.FCFS))
+                fila = new FilaFCFS();
+            else
+                fila = new FilaLCFS();
+        }
+
+        private Evento CalculaTempoAtendimento()
+        {
+            return new Evento
+            {
+                Tipo = TipoEvento.SAIDA,
+                Tempo = tempo + geradorEstatisticas.CalculaExponencial(TAXASERVIDOR)
+            };
+        }
+
+        private Evento CalculaProximaChegada()
+        {
+            return new Evento
+            {
+                Tipo = TipoEvento.CHEGADA,
+                Tempo = tempo + geradorEstatisticas.CalculaExponencial(TAXACHEGADA)
+            };
         }
     }
 }

@@ -8,5 +8,6 @@ namespace Estatisticas
     {
         public double L { get; set; }
         public double U { get; set; }
+        public double Precisao { get; set; }
     }
 }

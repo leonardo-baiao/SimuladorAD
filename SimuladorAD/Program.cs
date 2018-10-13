@@ -9,15 +9,20 @@ namespace Simulador
     {
         static void Main(string[] args)
         {
-            var processando = true;
-            var simulador = new Simulador(TipoEstrutura.FILA);
-
-            while (processando)
-            {
-                simulador.ProximoEvento();
-                simulador.TrataEvento();
-                simulador.GeraEstatisticas();
+            if(args.Length == 0 || int.TryParse(args[0], out input)){
+                System.Console.WriteLine("Please enter 0 for FCFS or 1 for LCFS");
+                return;
             }
+
+            cons int MAX = 3200;
+            var simulador = new Simulador(input = 0 ? TipoFila.FCFS : TipoFila.LCFS);
+
+            while (simulador.Rodada <= MAX)
+            {
+                simulador.ProcessaEventos(100);
+                simulador.ProximaRodada();
+            }
+            simulador.GeraEstatisticas();
         }
 
     }

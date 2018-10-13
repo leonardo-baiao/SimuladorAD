@@ -6,7 +6,13 @@ namespace Estruturas
 {
     public class Evento
     {
-        public string tipo { get; set; }
-        public string descricao { get; set; }
+        public TipoEvento Tipo { get; set; }
+        public string Tempo { get; set; }
+    }
+
+    public enum TipoEvento
+    {
+        CHEGADA = 1,
+        SAIDA = 2,
     }
 }
