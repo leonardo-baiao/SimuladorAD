@@ -7,21 +7,12 @@ namespace Estruturas
     public class FilaFCFS : Fila
     {
 
-        public override void AdicionaCliente(Cliente cliente)
+        public override void AdicionaFregues(Fregues cliente)
         {
             fila.Add(cliente);
         }
 
-        public override void DeletaCliente()
-        {
-        }
-
-        public override void MostraFila()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Cliente RetornaCliente()
+        public override Fregues RetornaFregues()
         {
             var cliente = fila[0];
             fila.RemoveAt(0);

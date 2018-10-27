@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Estruturas
 {
-    public class Cliente
+    public class Fregues
     {
-        public string Tipo { get; set; }
+        public int Tipo { get; set; }
         public double TempoChegada { get; set; }
     }
 }

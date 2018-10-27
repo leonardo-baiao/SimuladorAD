@@ -6,16 +6,17 @@ namespace Estruturas
 {
     public abstract class Fila
     {
-        public List<Cliente> fila;
+        protected List<Fregues> fila;
 
-        public EstruturaEventos()
+        public Fila()
         {
-            fila = new List<Cliente>();
+            fila = new List<Fregues>();
         }
 
-        public abstract void MostraFila();
-        public abstract void AdicionaCliente(Cliente cliente);
-        public abstract Cliente RetornaCliente();
+        public int Quantidade{ get { return fila.Count; } }
+
+        public abstract void AdicionaFregues(Fregues cliente);
+        public abstract Fregues RetornaFregues();
     }
 
     public enum TipoFila

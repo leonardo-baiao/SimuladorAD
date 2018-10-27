@@ -11,7 +11,7 @@ namespace Estatisticas
             
         }
 
-        public void Exportar(List<Estatisticas> estatisticas)
+        public void Exportar(List<Estatistica> estatisticas)
         {
 
         }

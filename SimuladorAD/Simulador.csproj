@@ -5,4 +5,9 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Estatisticas\Estatisticas.csproj" />
+    <ProjectReference Include="..\Estruturas\Estruturas.csproj" />
+  </ItemGroup>
+
 </Project>

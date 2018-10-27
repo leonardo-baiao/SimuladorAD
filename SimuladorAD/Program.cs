@@ -1,28 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using Estruturas;
 
 namespace Simulador
 {
     class Program
     {
+        static int input;
+
         static void Main(string[] args)
         {
-            if(args.Length == 0 || int.TryParse(args[0], out input)){
-                System.Console.WriteLine("Please enter 0 for FCFS or 1 for LCFS");
-                return;
-            }
+            //if(args.Length == 0 || int.TryParse(args[0], out input)){
+            //    Console.WriteLine("Por favor insira 0 para FCFS ou 1 para LCFS");
+            //    return;
+            //}
 
-            cons int MAX = 3200;
-            var simulador = new Simulador(input = 0 ? TipoFila.FCFS : TipoFila.LCFS);
-
-            while (simulador.Rodada <= MAX)
+            //var simulador = new Simulador(input == 0 ? TipoFila.FCFS : TipoFila.LCFS);
+            var simulador = new Simulador(TipoFila.FCFS);
+            
+            while (simulador.Rodada <= Constantes.MAX_RODADAS)
             {
-                simulador.ProcessaEventos(100);
+                Console.WriteLine("Iniciando processamento de eventos da rodada " + simulador.Rodada);
+                simulador.ProcessaEventos();
+
+                Console.WriteLine("Fim da rodada "  + simulador.Rodada);
                 simulador.ProximaRodada();
+                Thread.Sleep(2000);
             }
-            simulador.GeraEstatisticas();
+            //simulador.GeraEstatisticas();
         }
 
     }

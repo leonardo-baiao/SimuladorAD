@@ -7,7 +7,7 @@ namespace Estruturas
     public class Evento
     {
         public TipoEvento Tipo { get; set; }
-        public string Tempo { get; set; }
+        public double Tempo { get; set; }
     }
 
     public enum TipoEvento
