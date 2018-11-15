@@ -28,9 +28,9 @@ namespace Estruturas
         {
             try
             {
-                listaEventos.Insert(listaEventos.FindIndex(e => e.Tempo >= evento.Tempo), evento);
+                listaEventos.Insert(listaEventos.FindIndex(e => e.Tempo > evento.Tempo), evento);
             }
-            catch { listaEventos.Add(evento); }
+            catch(Exception) { listaEventos.Add(evento); }
         }
 
         public void RemoveEvento()
