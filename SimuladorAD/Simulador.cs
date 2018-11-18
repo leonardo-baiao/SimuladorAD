@@ -1,8 +1,7 @@
-﻿using System;
-using Estatisticas;
+﻿using Estatisticas;
 using Estruturas;
+using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace Simulador
 {
@@ -12,7 +11,7 @@ namespace Simulador
         private double tempoUltimoEvento = 0;
         private double tempoInicialRodada = 0;
         private int amostras = 0;
-        private bool servidor = false;
+        private bool servidor;
         private Evento eventoAtual;
         private double TAXA_CHEGADA;
         private ListaEventos listaEventos;
@@ -35,9 +34,12 @@ namespace Simulador
         
         public void ProximaRodada()
         {
-            if(Rodada != 0)
-                GeraRodadaEstatisticas();
-            estatisticaAtual = new Estatistica { Rodada = ++Rodada };
+            Rodada++;
+
+            if (Rodada > Constantes.MAX_RODADAS)
+                return;
+
+            estatisticaAtual = new Estatistica { Rodada = Rodada };
             amostras = 0;
             tempoInicialRodada = tempo;
         }
@@ -56,7 +58,7 @@ namespace Simulador
 
             if (eventoAtual == null)
             {
-                listaEventos.AdicionaEvento(CalculaProximaChegada());
+                listaEventos.AdicionaEvento(CalculaChegadaFregues());
                 return;
             }
 
@@ -64,11 +66,14 @@ namespace Simulador
 
             switch (eventoAtual.Tipo)
             {
-                case TipoEvento.CHEGADA:
+                case TipoEvento.CHEGADA_FREGUES:
                     ChegadaFregues();
                     break;
-                case TipoEvento.SAIDA:
-                    AtendimentoFregues();
+                case TipoEvento.ENTRADA_SERVIDOR:
+                    EntradaServidor();
+                    break;
+                case TipoEvento.SAIDA_SERVIDOR:
+                    SaidaServidor();
                     break;
                 default:
                     break;
@@ -76,62 +81,75 @@ namespace Simulador
 
             tempoUltimoEvento = tempo;
         }
-        
+
         private void ChegadaFregues()
         {
-            estatisticaAtual.QuantidadeMedia = estatisticaAtual.QuantidadeMedia + (fila.Quantidade * (tempo - tempoUltimoEvento)); 
-            
-            fila.AdicionaFregues(new Fregues{ Tipo = Rodada , TempoChegada = tempo });
+            estatisticaAtual.QuantidadeMedia += servidor ? (fila.Quantidade + 1) * (tempo - tempoUltimoEvento) : fila.Quantidade * (tempo - tempoUltimoEvento);
+
+            fila.AdicionaFregues(new Fregues { Tipo = Rodada, TempoChegada = tempo });
 
             if (!servidor)
             {
-                listaEventos.AdicionaEvento(CalculaTempoAtendimento());
+                listaEventos.AdicionaEvento(CalculaEntradaServidor());
                 servidor = true;
             }
 
-            listaEventos.AdicionaEvento(CalculaProximaChegada());
+            listaEventos.AdicionaEvento(CalculaChegadaFregues());
         }
 
-        private void AtendimentoFregues()
+        private void EntradaServidor()
         {
-            estatisticaAtual.QuantidadeMedia = estatisticaAtual.QuantidadeMedia + (fila.Quantidade * (tempo - tempoUltimoEvento));
-
             var cliente = fila.RetornaFregues();
+            listaEventos.AdicionaEvento(CalculaSaidaServidor());
 
             if (Rodada.Equals(cliente.Tipo))
             {
                 _geradorEstatisticas.CalculaSomaAmostras(ref estatisticaAtual, tempo - cliente.TempoChegada);
                 amostras++;
             }
+        }
+
+        private void SaidaServidor()
+        {
+            estatisticaAtual.QuantidadeMedia += (fila.Quantidade + 1) * (tempo - tempoUltimoEvento);
             
             if (fila.Quantidade == 0)
             {
                 servidor = false;
                 return;
             }
-
-            listaEventos.AdicionaEvento(CalculaTempoAtendimento());
+            listaEventos.AdicionaEvento(CalculaEntradaServidor());
         }
         
-        private Evento CalculaTempoAtendimento()
+        private Evento CalculaEntradaServidor()
         {
             return new Evento
             {
-                Tipo = TipoEvento.SAIDA,
+                Tipo = TipoEvento.ENTRADA_SERVIDOR,
+                Tempo = tempo
+            };
+        }
+
+
+        private Evento CalculaSaidaServidor()
+        {
+            return new Evento
+            {
+                Tipo = TipoEvento.SAIDA_SERVIDOR,
                 Tempo = tempo + _geradorEstatisticas.CalculaExponencial(Constantes.TAXA_SERVIDOR)
             };
         }
 
-        private Evento CalculaProximaChegada()
+        private Evento CalculaChegadaFregues()
         {
             return new Evento
             {
-                Tipo = TipoEvento.CHEGADA,
+                Tipo = TipoEvento.CHEGADA_FREGUES,
                 Tempo = tempo + _geradorEstatisticas.CalculaExponencial(TAXA_CHEGADA)
             };
         }
         
-        private void GeraRodadaEstatisticas()
+        public  void CalculaEstatisticas()
         {
             estatisticaAtual.TempoMedio = _geradorEstatisticas.CalculaMediaAmostral(estatisticaAtual.SomaAmostras, amostras);
             estatisticaAtual.QuantidadeMedia = _geradorEstatisticas.CalculaMediaAmostral(estatisticaAtual.QuantidadeMedia,tempo - tempoInicialRodada);
@@ -144,7 +162,7 @@ namespace Simulador
             Console.WriteLine("Quantidade Media: " + estatisticaAtual.QuantidadeMedia);
         }
 
-        public void GeraEstatisticas()
+        public void CalculaEstatisticasFinais()
         {
             double tempoMedioFinal;
             double varianciaTempoFinal;

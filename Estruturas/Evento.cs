@@ -12,7 +12,8 @@ namespace Estruturas
 
     public enum TipoEvento
     {
-        CHEGADA = 1,
-        SAIDA = 2,
+        CHEGADA_FREGUES = 1,
+        SAIDA_SERVIDOR = 2,
+        ENTRADA_SERVIDOR = 3,
     }
 }

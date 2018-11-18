@@ -13,7 +13,7 @@ namespace Simulador
         {
             string input;
             int number;
-            double taxa;
+            double taxaChegada;
 
             while (true)
             {
@@ -22,7 +22,6 @@ namespace Simulador
                 
                 if (!int.TryParse(input, out number) || number > 1 || number < 0)
                 {
-                    Console.WriteLine("Por favor insira 0 para FCFS ou 1 para LCFS");
                     continue;
                 }
                 break;
@@ -32,18 +31,29 @@ namespace Simulador
 
             while (true)
             {
-                Console.WriteLine("Escolha a taxa de utilização do sistema (entre 0 e 1)");
+                Console.WriteLine("Escolha a taxa de utilização do sistema (entre 0.1 e 0.9 para especifica e 1 para percorrer todas)");
                 input = Console.ReadLine();
 
-                if(!double.TryParse(input,out taxa) || taxa > 1 || taxa < 0)
+                if(!double.TryParse(input,out taxaChegada) || taxaChegada > 1 || taxaChegada < 0)
                 {
-                    Console.WriteLine("Por favor insira um número entre 0 e 1. Ex: 0.9");
                     continue;
                 }
                 break;
             }
 
-            Console.WriteLine("----------------------------Configurações-----------------------------");
+            if (taxaChegada == 1)
+            {
+                foreach (var taxa in Constantes.taxas)
+                    IniciarSimulacao(tipoFila, taxa);
+            }
+            else
+                IniciarSimulacao(tipoFila, taxaChegada);
+        }
+
+
+        private static void IniciarSimulacao(TipoFila tipoFila, double taxa)
+        {
+            Console.WriteLine("----------------------------Configurações-----------------------------\n");
             Console.WriteLine("Tipo de fila: " + tipoFila.ToString());
             Console.WriteLine("Kmin: " + Constantes.KMIN);
             Console.WriteLine("Rodadas: " + Constantes.MAX_RODADAS);
@@ -57,13 +67,17 @@ namespace Simulador
 
 
             var simulador = new Simulador(tipoFila, taxa);
-            
+
             while (simulador.Rodada <= Constantes.MAX_RODADAS)
             {
                 simulador.ProcessaEventos();
+
+                if (simulador.Rodada != 0)
+                    simulador.CalculaEstatisticas();
+
                 simulador.ProximaRodada();
             }
-            simulador.GeraEstatisticas();
+            simulador.CalculaEstatisticasFinais();
             Console.ReadKey();
         }
 
