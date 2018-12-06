@@ -1,13 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <FileUpgradeFlags>40</FileUpgradeFlags>
+    <UpgradeBackupLocation>C:\Users\John\source\repos\SimuladorAD\Backup\SimuladorAD\</UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Estatisticas\Estatisticas.csproj" />
     <ProjectReference Include="..\Estruturas\Estruturas.csproj" />
   </ItemGroup>
-
 </Project>

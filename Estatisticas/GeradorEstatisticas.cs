@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using System.Linq;
+
 namespace Estatisticas
 {
     public class GeradorEstatisticas
@@ -90,6 +92,21 @@ namespace Estatisticas
         public double CalculaVarianciaAmostral(double somAmostras, double somQAmostras, double n)
         {
             return (somQAmostras/(n-1)) - (Math.Pow(somAmostras,2)/(n*(n-1)));
+        }
+
+        public double CalculaCovariancia(IEnumerable<double> mediasRodadas, double mediaAmostral)
+        {
+            double autocov  = 0;
+            List<double> mediasLista = mediasRodadas.ToList();
+
+            for (var i = 0; i < mediasRodadas.Count() - 1; i++)
+            {
+                autocov += (mediasLista[i] - mediaAmostral) * (mediasLista[i+1] - mediaAmostral);
+            }
+
+            autocov = autocov / (mediasLista.Count - 2);
+
+            return autocov;
         }
 
     }

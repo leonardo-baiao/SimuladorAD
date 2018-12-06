@@ -2,6 +2,7 @@
 using Estruturas;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Simulador
 {
@@ -155,6 +156,7 @@ namespace Simulador
             estatisticaAtual.QuantidadeMedia = _geradorEstatisticas.CalculaMediaAmostral(estatisticaAtual.QuantidadeMedia,tempo - tempoInicialRodada);
             listaEstatisticas.Add(estatisticaAtual);
 
+
             Console.WriteLine("");
             Console.WriteLine("Rodada " + Rodada);
             Console.WriteLine("Quantidade: " + fila.Quantidade);
@@ -199,6 +201,14 @@ namespace Simulador
             icPessoasMedia = _geradorEstatisticas.CalculaIC(mediaPessoasFinal, varianciaPessoasFinal, VariavelAleatoria.TSTUDENT, listaEstatisticas.Count);
             icPessoasVariancia = _geradorEstatisticas.CalculaIC(mediaPessoasFinal, varianciaPessoasFinal, VariavelAleatoria.CHIQUADRADO, listaEstatisticas.Count);
 
+
+            //shak altera
+
+            double  covTempo =_geradorEstatisticas.CalculaCovariancia(listaEstatisticas.Select(l => l.TempoMedio), tempoMedioFinal);
+            double covPessoas = _geradorEstatisticas.CalculaCovariancia(listaEstatisticas.Select(l => l.QuantidadeMedia), mediaPessoasFinal);
+
+            //shak altera
+
             Console.WriteLine("--------------------------------------------------------------------");
             Console.WriteLine("Rodadas: " + (listaEstatisticas.Count));
             Console.WriteLine("");
@@ -208,13 +218,17 @@ namespace Simulador
             Console.WriteLine("    L: {0}, U: {1}, P: {2}", icMedia.L, icMedia.U, icMedia.Precisao);
             Console.WriteLine("Intervalo de Confiança Variancia:");
             Console.WriteLine("    L: {0}, U: {1}, P: {2}", icVariancia.L, icVariancia.U, icVariancia.Precisao);
+            Console.WriteLine("Cov: {0}", covTempo);
+
             Console.WriteLine("");
+
             Console.WriteLine("Numero de Pessoas Medio: " + mediaPessoasFinal);
             Console.WriteLine("Variancia do numero de pessoas: " + varianciaPessoasFinal);
             Console.WriteLine("Intervalo de Confiança numero de pessoas medio:");
             Console.WriteLine("    L: {0}, U: {1}, P: {2}", icPessoasMedia.L, icPessoasMedia.U, icPessoasMedia.Precisao);
             Console.WriteLine("Intervalo de Confiança variancia numero de pessoas:");
             Console.WriteLine("    L: {0}, U: {1}, P: {2}", icPessoasVariancia.L, icPessoasVariancia.U, icPessoasVariancia.Precisao);
+            Console.WriteLine("Cov: {0}", covPessoas);
         }
 
         private void GeraFila(TipoFila tipoFila)
