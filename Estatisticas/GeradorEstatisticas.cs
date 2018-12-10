@@ -55,8 +55,10 @@ namespace Estatisticas
         private void CalculaICChiQuadrado(double variancia, int n, ref IntervaloConfianca ic)
         {
             ChiSquared cs = new ChiSquared(n-1);
-            ic.U = (Constantes.KMIN * (n - 1) * variancia) / cs.InverseCumulativeDistribution(0.025);
-            ic.L = (Constantes.KMIN * (n - 1) * variancia) / cs.InverseCumulativeDistribution(0.975);
+            //ic.U = (Constantes.KMIN * (n - 1) * variancia) / cs.InverseCumulativeDistribution(0.025);
+            // ic.L = (Constantes.KMIN * (n - 1) * variancia) / cs.InverseCumulativeDistribution(0.975);
+            ic.U = ((n - 1) * variancia) / cs.InverseCumulativeDistribution(0.025);
+            ic.L = ((n - 1) * variancia) / cs.InverseCumulativeDistribution(0.975);
         }
 
         private void CalculaICTStudent(double media, double variancia, int n, ref IntervaloConfianca ic)
@@ -64,8 +66,8 @@ namespace Estatisticas
             StudentT ts = new StudentT(0,1,n-1);
             var percentil = ts.InverseCumulativeDistribution(0.975);
 
-            ic.U = media + percentil * (variancia/n);
-            ic.L = media - percentil * (variancia/n);
+            ic.U = media + percentil * Math.Sqrt(variancia/n);
+            ic.L = media - percentil * Math.Sqrt(variancia/n);
         }
 
         public double CalculaExponencial(double taxa)
@@ -89,9 +91,16 @@ namespace Estatisticas
             return (somAmostras)/n;
         }
 
-        public double CalculaVarianciaAmostral(double somAmostras, double somQAmostras, double n)
+        public double CalculaVarianciaAmostral(List<double> listaMediaRodadas, double media, double n)
         {
-            return (somQAmostras/(n-1)) - (Math.Pow(somAmostras,2)/(n*(n-1)));
+            var soma = 0.0;
+
+            foreach(var mediaRodada in listaMediaRodadas)
+            {
+                soma += Math.Pow(mediaRodada - media, 2);
+            }
+
+            return soma/(n-1);
         }
 
         public double CalculaCovariancia(IEnumerable<double> mediasRodadas, double mediaAmostral)

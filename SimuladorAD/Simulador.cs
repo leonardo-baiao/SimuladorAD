@@ -32,7 +32,14 @@ namespace Simulador
         }
 
         public int Rodada { get; private set; }
-        
+
+        internal void ProcessaRodadaTransiente()
+        {
+            ProcessaEventos();
+            ProximaRodada();
+        }
+
+
         public void ProximaRodada()
         {
             Rodada++;
@@ -82,6 +89,8 @@ namespace Simulador
 
             tempoUltimoEvento = tempo;
         }
+
+        
 
         private void ChegadaFregues()
         {
@@ -156,7 +165,6 @@ namespace Simulador
             estatisticaAtual.QuantidadeMedia = _geradorEstatisticas.CalculaMediaAmostral(estatisticaAtual.QuantidadeMedia,tempo - tempoInicialRodada);
             listaEstatisticas.Add(estatisticaAtual);
 
-
             Console.WriteLine("");
             Console.WriteLine("Rodada " + Rodada);
             Console.WriteLine("Quantidade: " + fila.Quantidade);
@@ -169,12 +177,10 @@ namespace Simulador
             double tempoMedioFinal;
             double varianciaTempoFinal;
             double somaTempoMedio = 0;
-            double somaTempoQMedio = 0;
 
             double mediaPessoasFinal;
             double varianciaPessoasFinal;
             double somaQuantidadeMedia = 0;
-            double somaQuantidadeQMedia = 0;
 
             IntervaloConfianca icMedia;
             IntervaloConfianca icVariancia;
@@ -184,16 +190,14 @@ namespace Simulador
             foreach (var estatistica in listaEstatisticas)
             {
                 somaTempoMedio += estatistica.TempoMedio;
-                somaTempoQMedio += Math.Pow(estatistica.TempoMedio, 2);
                 somaQuantidadeMedia += estatistica.QuantidadeMedia;
-                somaQuantidadeQMedia += Math.Pow(estatistica.QuantidadeMedia, 2);
             }
 
             tempoMedioFinal = _geradorEstatisticas.CalculaMediaAmostral(somaTempoMedio, listaEstatisticas.Count);
-            varianciaTempoFinal = _geradorEstatisticas.CalculaVarianciaAmostral(somaTempoMedio, somaTempoQMedio, listaEstatisticas.Count);
+            varianciaTempoFinal = _geradorEstatisticas.CalculaVarianciaAmostral(listaEstatisticas.Select(l => l.TempoMedio).ToList(), tempoMedioFinal, listaEstatisticas.Count);
 
             mediaPessoasFinal = _geradorEstatisticas.CalculaMediaAmostral(somaQuantidadeMedia,listaEstatisticas.Count);
-            varianciaPessoasFinal = _geradorEstatisticas.CalculaVarianciaAmostral(somaQuantidadeMedia,somaQuantidadeQMedia,listaEstatisticas.Count);
+            varianciaPessoasFinal = _geradorEstatisticas.CalculaVarianciaAmostral(listaEstatisticas.Select(l => l.QuantidadeMedia).ToList(), mediaPessoasFinal, listaEstatisticas.Count);
 
             icMedia = _geradorEstatisticas.CalculaIC(tempoMedioFinal, varianciaTempoFinal, VariavelAleatoria.TSTUDENT, listaEstatisticas.Count);
             icVariancia = _geradorEstatisticas.CalculaIC(tempoMedioFinal, varianciaTempoFinal, VariavelAleatoria.CHIQUADRADO, listaEstatisticas.Count);
@@ -201,16 +205,15 @@ namespace Simulador
             icPessoasMedia = _geradorEstatisticas.CalculaIC(mediaPessoasFinal, varianciaPessoasFinal, VariavelAleatoria.TSTUDENT, listaEstatisticas.Count);
             icPessoasVariancia = _geradorEstatisticas.CalculaIC(mediaPessoasFinal, varianciaPessoasFinal, VariavelAleatoria.CHIQUADRADO, listaEstatisticas.Count);
 
-
             //shak altera
 
-            double  covTempo =_geradorEstatisticas.CalculaCovariancia(listaEstatisticas.Select(l => l.TempoMedio), tempoMedioFinal);
+            double covTempo =_geradorEstatisticas.CalculaCovariancia(listaEstatisticas.Select(l => l.TempoMedio), tempoMedioFinal);
             double covPessoas = _geradorEstatisticas.CalculaCovariancia(listaEstatisticas.Select(l => l.QuantidadeMedia), mediaPessoasFinal);
 
             //shak altera
 
             Console.WriteLine("--------------------------------------------------------------------");
-            Console.WriteLine("Rodadas: " + (listaEstatisticas.Count));
+            Console.WriteLine("Rodadas: " + listaEstatisticas.Count + " KMIN: " + Constantes.KMIN + " Utilizacao: " + TAXA_CHEGADA);
             Console.WriteLine("");
             Console.WriteLine("Tempo Medio: " + tempoMedioFinal);
             Console.WriteLine("Variancia Tempo: " + varianciaTempoFinal);

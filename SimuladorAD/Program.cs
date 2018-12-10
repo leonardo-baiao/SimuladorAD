@@ -68,12 +68,13 @@ namespace Simulador
 
             var simulador = new Simulador(tipoFila, taxa);
 
+            simulador.ProcessaRodadaTransiente();
+
             while (simulador.Rodada <= Constantes.MAX_RODADAS)
             {
                 simulador.ProcessaEventos();
 
-                if (simulador.Rodada != 0)
-                    simulador.CalculaEstatisticas();
+                simulador.CalculaEstatisticas();
 
                 simulador.ProximaRodada();
             }
