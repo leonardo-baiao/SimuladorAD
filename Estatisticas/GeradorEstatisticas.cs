@@ -55,10 +55,10 @@ namespace Estatisticas
         private void CalculaICChiQuadrado(double variancia, int n, ref IntervaloConfianca ic)
         {
             ChiSquared cs = new ChiSquared(n-1);
-            //ic.U = (Constantes.KMIN * (n - 1) * variancia) / cs.InverseCumulativeDistribution(0.025);
-            // ic.L = (Constantes.KMIN * (n - 1) * variancia) / cs.InverseCumulativeDistribution(0.975);
-            ic.U = ((n - 1) * variancia) / cs.InverseCumulativeDistribution(0.025);
-            ic.L = ((n - 1) * variancia) / cs.InverseCumulativeDistribution(0.975);
+            ic.U = (Constantes.KMIN * (n - 1) * variancia) / cs.InverseCumulativeDistribution(0.025);
+            ic.L = (Constantes.KMIN * (n - 1) * variancia) / cs.InverseCumulativeDistribution(0.975);
+            //ic.U = ((n - 1) * variancia) / cs.InverseCumulativeDistribution(0.025);
+            //ic.L = ((n - 1) * variancia) / cs.InverseCumulativeDistribution(0.975);
         }
 
         private void CalculaICTStudent(double media, double variancia, int n, ref IntervaloConfianca ic)

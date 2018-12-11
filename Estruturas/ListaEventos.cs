@@ -7,10 +7,14 @@ namespace Estruturas
     public class ListaEventos
     {
         private List<Evento> listaEventos;
+        Evento proximaChegada;
+        Evento proximaSaida;
 
         public ListaEventos()
         {
             listaEventos = new List<Evento>();
+            proximaChegada = new Evento();
+            proximaSaida = new Evento();
         }
 
         public Evento ProximoEvento()
@@ -32,10 +36,29 @@ namespace Estruturas
             }
             catch(Exception) { listaEventos.Add(evento); }
         }
-
+        
         public void RemoveEvento()
         {
             listaEventos.RemoveAt(0);
+        }
+
+
+        public void NewAdicionaEvento(Evento evento)
+        {
+            if (evento.Tipo == TipoEvento.CHEGADA_FREGUES)
+            {
+                proximaChegada = evento;
+            }
+            else
+                proximaSaida = evento;
+        }
+
+        public Evento NewProximoEvento()
+        {
+            if (proximaChegada.Tempo <= proximaSaida.Tempo || proximaSaida.Tempo == 0)
+                return proximaChegada;
+            else
+                return proximaSaida;
         }
 
     }

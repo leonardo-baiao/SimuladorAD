@@ -63,22 +63,26 @@ namespace Simulador
             Console.WriteLine("Pressione uma tecla para iniciar a simulação");
             Console.ReadKey();
             Console.WriteLine("");
-            Console.WriteLine("Rodada transiente");
+            Console.WriteLine("Iniciando Simulação");
 
 
             var simulador = new Simulador(tipoFila, taxa);
 
+            var start = DateTime.Now;
+            
             simulador.ProcessaRodadaTransiente();
 
             while (simulador.Rodada <= Constantes.MAX_RODADAS)
             {
+
                 simulador.ProcessaEventos();
-
                 simulador.CalculaEstatisticas();
-
                 simulador.ProximaRodada();
             }
             simulador.CalculaEstatisticasFinais();
+
+            var time = DateTime.Now.Subtract(start);
+            Console.WriteLine(time);
             Console.ReadKey();
         }
 
